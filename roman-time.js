@@ -1,77 +1,72 @@
-var hours = parseInt(process.argv[2]);
-var minutes = parseInt(process.argv[3]);
+var hours = parseInt(process.argv[2], 10);
+var minutes = parseInt(process.argv[3], 10);
 var second = ['I','II','III','IV','V','VI','VII','VIII','IX'];
 var first = ['--','X','XX','XXX','XL','L'];
-var firstNumber, secondNumber, result, roman;
 
-var list = [['%%%%%','%%%  %%%','%       %','%     ','    ','        '],
-            ['  %  ',' %    % ','%       %','%     ','    ','        '],
-            ['  %  ','  %  %  ','%       %','%     ',' %% ','        '],
-            ['  %  ','   %%   ',' %     % ','%     ',' %% ',' %%%%%% '],
-            ['  %  ','  %  %  ','  %   %  ','%     ','    ','        '],
-            ['  %  ',' %    % ','   % %   ','%     ',' %% ','        '],
-            ['%%%%%','%%%  %%%','    %    ','%%%%%%',' %% ','        ']];
-
-if (hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60)
+if (isNaN(hours) || isNaN(minutes) ||hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60)
+{
     console.log('Время указано неверно');
+}
 else
 {
-    result = '';
+    var result = '';
     result += arabToRoman(hours) + ':';
     result += arabToRoman(minutes);
-    console.log(result);
-    console.log('');
-    printASCII(result);
+    var image = printASCII(result);
+    console.log(result + '\n\n' + image);
 }
 
 function arabToRoman(number)
 {
-    roman = '';
-    firstNumber = parseInt(number / 10);
-    secondNumber = number % 10;
-    if (firstNumber == 0)
-    {
-        if (secondNumber == 0)
-        {
-            roman += first[0];
-        }
-        else
-        {
-            roman += second[secondNumber-1];
-        }
-    }
-    else
+    var roman = '';
+    var firstNumber = Math.floor(number / 10);
+    var secondNumber = number % 10;
+    var isZeroFirst = true;
+    var isZeroSecond = true;
+    if (firstNumber !== 0)
     {
         roman += first[firstNumber];
-        if (secondNumber != 0)
-        {
-            roman += second[secondNumber-1];
-        }       
+        isZeroFirst = false;
+    }
+    if (secondNumber !== 0)
+    {
+        roman += second[secondNumber-1];
+        isZeroSecond = false;
+    }
+    if (isZeroFirst && isZeroSecond)
+    {
+        roman += first[0];
     }
     return roman;
 }
 
 function printASCII(str)
 {
+    var list = [['%%%%%','%%%  %%%','%       %','%     ','    ','        '],
+                ['  %  ',' %    % ','%       %','%     ','    ','        '],
+                ['  %  ','  %  %  ','%       %','%     ',' %% ','        '],
+                ['  %  ','   %%   ',' %     % ','%     ',' %% ',' %%%%%% '],
+                ['  %  ','  %  %  ','  %   %  ','%     ','    ','        '],
+                ['  %  ',' %    % ','   % %   ','%     ',' %% ','        '],
+                ['%%%%%','%%%  %%%','    %    ','%%%%%%',' %% ','        ']];
+    var letterIndexes = {
+        'I': 0,
+        'X': 1,
+        'V': 2,
+        'L': 3,
+        ':': 4,
+        '-': 5
+    };
     var len = str.length;
-    for (k = 0; k < 7; k++)
+    var res = '';
+    for (var row = 0; row < 7; row++)
     {
-        var res = '';
         for (i = 0; i < len; i++)
         {
-            if (str[i] == 'I')
-                res += list[k][0] + ' ';
-            if (str[i] == 'X')
-                res += list[k][1] + ' ';
-            if (str[i] == 'V')
-                res += list[k][2] + ' ';
-            if (str[i] == 'L')
-                res += list[k][3] + ' ';
-            if (str[i] == ':')
-                res += list[k][4] + ' ';
-            if (str[i] == '-')
-                res += list[k][5] + ' ';
+            var index = letterIndexes[str[i]];
+            res += list[row][index] + ' ';
         }
-        console.log(res);
+        res += '\n';
     }
+    return res;
 }
